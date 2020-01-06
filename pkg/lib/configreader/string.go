@@ -37,6 +37,7 @@ type StringValidation struct {
 	AllowEmpty                           bool
 	AllowedValues                        []string
 	Prefix                               string
+	MaxLength                            int
 	AlphaNumericDashDotUnderscoreOrEmpty bool
 	AlphaNumericDashDotUnderscore        bool
 	AlphaNumericDashUnderscore           bool
@@ -202,6 +203,10 @@ func ValidateStringVal(val string, v *StringValidation) error {
 		if !slices.HasString(v.AllowedValues, val) {
 			return ErrorInvalidStr(val, v.AllowedValues...)
 		}
+	}
+
+	if v.MaxLength > 0 && len(val) > v.MaxLength {
+		return ErrorTooLong(val, v.MaxLength)
 	}
 
 	if v.Prefix != "" {

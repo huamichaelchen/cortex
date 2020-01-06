@@ -182,7 +182,8 @@ var UserValidation = &cr.StructValidation{
 		{
 			StructField: "ClusterName",
 			StringValidation: &cr.StringValidation{
-				Default: "cortex",
+				Default:   "cortex",
+				MaxLength: 63,
 			},
 		},
 		{
@@ -202,9 +203,11 @@ var UserValidation = &cr.StructValidation{
 			StringPtrValidation: &cr.StringPtrValidation{},
 		},
 		{
-			StructField:      "LogGroup",
-			StringValidation: &cr.StringValidation{},
-			DefaultField:     "ClusterName",
+			StructField: "LogGroup",
+			StringValidation: &cr.StringValidation{
+				MaxLength: 63,
+			},
+			DefaultField: "ClusterName",
 		},
 		{
 			StructField: "ImagePythonServe",
@@ -355,8 +358,10 @@ var AccessValidation = &cr.StructValidation{
 	AllowExtraFields: true,
 	StructFieldValidations: []*cr.StructFieldValidation{
 		{
-			StructField:         "ClusterName",
-			StringPtrValidation: &cr.StringPtrValidation{},
+			StructField: "ClusterName",
+			StringPtrValidation: &cr.StringPtrValidation{
+				MaxLength: 63,
+			},
 		},
 		{
 			StructField: "Region",
@@ -739,7 +744,8 @@ var AccessPromptValidation = &cr.PromptValidation{
 				Prompt: ClusterNameUserFacingKey,
 			},
 			StringPtrValidation: &cr.StringPtrValidation{
-				Default: pointer.String("cortex"),
+				Default:   pointer.String("cortex"),
+				MaxLength: 63,
 			},
 		},
 		{

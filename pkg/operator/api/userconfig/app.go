@@ -33,6 +33,7 @@ var appValidation = &cr.StructValidation{
 				Required:                   true,
 				AlphaNumericDashUnderscore: true,
 				DNS1123:                    true,
+				MaxLength:                  63,
 			},
 		},
 		typeFieldValidation,

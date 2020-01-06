@@ -124,14 +124,16 @@ var apiValidation = &cr.StructValidation{
 		{
 			StructField: "Name",
 			StringValidation: &cr.StringValidation{
-				Required: true,
-				DNS1035:  true,
+				Required:  true,
+				DNS1035:   true,
+				MaxLength: 63,
 			},
 		},
 		{
 			StructField: "Endpoint",
 			StringPtrValidation: &cr.StringPtrValidation{
 				Validator: urls.ValidateEndpoint,
+				// MaxLength: 63,  // TODO confirm no limit
 			},
 		},
 		{
@@ -412,6 +414,10 @@ func (predictor *Predictor) PythonValidate() error {
 }
 
 func (api *API) Validate(deploymentName string, projectFileMap map[string][]byte) error {
+	if len(api.Name)+len(deploymentName)+len("----") > 63 {
+		return errors.New("TOO LONG") // TODO improve message
+	}
+
 	if api.Endpoint == nil {
 		api.Endpoint = pointer.String("/" + deploymentName + "/" + api.Name)
 	}
