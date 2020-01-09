@@ -415,7 +415,7 @@ func (predictor *Predictor) PythonValidate() error {
 
 func (api *API) Validate(deploymentName string, projectFileMap map[string][]byte) error {
 	if len(api.Name)+len(deploymentName)+len("----") > 63 {
-		return cr.ErrorTooLong("combination of deployment name and api name", 59)
+		return errors.Wrap(ErrorAPINameAppNameTooLong(59), Identify(api))
 	}
 
 	if api.Endpoint == nil {

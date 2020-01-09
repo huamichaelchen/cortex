@@ -49,6 +49,7 @@ const (
 	ErrInvalidTensorFlowDir
 	ErrFieldMustBeDefinedForPredictorType
 	ErrFieldNotSupportedByPredictorType
+	ErrAPINameAppNameTooLong
 	ErrDuplicateEndpoints
 )
 
@@ -74,6 +75,7 @@ var errorKinds = []string{
 	"err_invalid_tensorflow_dir",
 	"err_field_must_be_defined_for_predictor_type",
 	"err_field_not_supported_by_predictor_type",
+	"err_api_name_app_name_too_long",
 	"err_duplicate_endpoints",
 }
 
@@ -290,6 +292,13 @@ func ErrorFieldNotSupportedByPredictorType(fieldKey string, predictorType Predic
 	return errors.WithStack(Error{
 		Kind:    ErrFieldNotSupportedByPredictorType,
 		message: fmt.Sprintf("%s is not a supported field for the %s predictor type", fieldKey, predictorType.String()),
+	})
+}
+
+func ErrorAPINameAppNameTooLong(maxLen int) error {
+	return errors.WithStack(Error{
+		Kind:    ErrAPINameAppNameTooLong,
+		message: fmt.Sprintf("concatenation of api name and deployment name must be no more than %d characters", maxLen),
 	})
 }
 
