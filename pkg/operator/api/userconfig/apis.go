@@ -133,7 +133,7 @@ var apiValidation = &cr.StructValidation{
 			StructField: "Endpoint",
 			StringPtrValidation: &cr.StringPtrValidation{
 				Validator: urls.ValidateEndpoint,
-				MaxLength: 100,
+				MaxLength: 1000, // no particular reason other than it works
 			},
 		},
 		{

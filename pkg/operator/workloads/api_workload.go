@@ -353,7 +353,6 @@ func tfAPISpec(
 				"resourceID":   ctx.APIs[api.Name].ID,
 				"workloadID":   workloadID,
 				"userFacing":   "true",
-				"logGroupName": ctx.LogGroupName(api.Name),
 			},
 			Annotations: map[string]string{
 				"traffic.sidecar.istio.io/excludeOutboundIPRanges": "0.0.0.0/0",
@@ -547,7 +546,6 @@ func pythonAPISpec(
 				"resourceID":   ctx.APIs[api.Name].ID,
 				"workloadID":   workloadID,
 				"userFacing":   "true",
-				"logGroupName": ctx.LogGroupName(api.Name),
 			},
 			Annotations: map[string]string{
 				"traffic.sidecar.istio.io/excludeOutboundIPRanges": "0.0.0.0/0",
@@ -709,7 +707,6 @@ func onnxAPISpec(
 				"resourceID":   ctx.APIs[api.Name].ID,
 				"workloadID":   workloadID,
 				"userFacing":   "true",
-				"logGroupName": ctx.LogGroupName(api.Name),
 			},
 			Annotations: map[string]string{
 				"traffic.sidecar.istio.io/excludeOutboundIPRanges": "0.0.0.0/0",
