@@ -85,7 +85,7 @@ data:
       <filter **>
         @type record_modifier
         <record>
-          group_name  ${record.dig("kubernetes", "labels", "logGroupName") || ENV['LOG_GROUP_NAME']}
+          group_name  ${record["kubernetes"]["labels"].has_key?("apiName") ? ENV['CLUSTER_NAME']+"."+record["kubernetes"]["labels"]["appName"]+"."+record["kubernetes"]["labels"]["apiName"] : ENV['LOG_GROUP_NAME']}
           stream_name ${record.dig("kubernetes", "pod_name")}_${record.dig("kubernetes", "container_name")}
           log ${record.dig("log").rstrip}
         </record>
@@ -139,6 +139,8 @@ spec:
           value: $CORTEX_REGION
         - name: LOG_GROUP_NAME
           value: $CORTEX_LOG_GROUP
+        - name: CLUSTER_NAME
+          value: $CORTEX_CLUSTER_NAME
         envFrom:
         - secretRef:
             name: aws-credentials

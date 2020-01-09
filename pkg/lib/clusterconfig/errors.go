@@ -44,6 +44,7 @@ const (
 	ErrOnDemandBaseCapacityGreaterThanMax
 	ErrConfigCannotBeChangedOnUpdate
 	ErrInvalidAvailabilityZone
+	ErrDidNotMatchStrictS3Regex
 	ErrInvalidInstanceType
 )
 
@@ -65,6 +66,7 @@ var (
 		"err_on_demand_base_capacity_greater_than_max",
 		"err_config_cannot_be_changed_on_update",
 		"err_invalid_availability_zone",
+		"err_did_not_match_strict_s3_regex",
 		"err_invalid_instance_type",
 	}
 )
@@ -217,6 +219,13 @@ func ErrorInvalidAvailabilityZone(invalidZone string, validAvailabilityZones []s
 	return errors.WithStack(Error{
 		Kind:    ErrInvalidAvailabilityZone,
 		message: fmt.Sprintf("%s is an invalid availability zone; please choose from the following valid zones %s", invalidZone, s.UserStrsOr(validAvailabilityZones)),
+	})
+}
+
+func ErrorDidNotMatchStrictS3Regex() error {
+	return errors.WithStack(Error{
+		Kind:    ErrDidNotMatchStrictS3Regex,
+		message: fmt.Sprintf("one of the following rules has been violated: only lowercase alphanumeric characters and dashes allowed, no consecutive dashes, no leading or trailing dashes"),
 	})
 }
 

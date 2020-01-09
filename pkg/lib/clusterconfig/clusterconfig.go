@@ -17,6 +17,7 @@ limitations under the License.
 package clusterconfig
 
 import (
+	"regexp"
 	"sort"
 	"strings"
 
@@ -37,6 +38,8 @@ var (
 	_spotInstanceDistributionLength     = 2
 	_onDemandPercentageAboveBaseDefault = 50
 	_maxInstancePools                   = 20
+	// This regex is stricter than the actual S3 rules
+	_strictS3BucketRegex = regexp.MustCompile(`^([a-z0-9])+(-[a-z0-9]+)*$`)
 )
 
 type Config struct {
@@ -184,6 +187,8 @@ var UserValidation = &cr.StructValidation{
 			StringValidation: &cr.StringValidation{
 				Default:   "cortex",
 				MaxLength: 63,
+				MinLength: 3,
+				Validator: CortexClusterNameValidation,
 			},
 		},
 		{
@@ -361,6 +366,7 @@ var AccessValidation = &cr.StructValidation{
 			StructField: "ClusterName",
 			StringPtrValidation: &cr.StringPtrValidation{
 				MaxLength: 63,
+				MinLength: 3,
 			},
 		},
 		{
@@ -647,7 +653,14 @@ func InstallPrompt(clusterConfig *Config, awsAccessKeyID string, awsSecretAccess
 		return ErrorInvalidAWSCredentials()
 	}
 
-	defaultBucket := pointer.String(clusterConfig.ClusterName + "-" + hash.String(awsAccountID)[:10])
+	defaultBucket := clusterConfig.ClusterName + "-" + hash.String(awsAccountID)[:10]
+	if len(defaultBucket) > 63 {
+		defaultBucket = defaultBucket[:63]
+	}
+
+	if strings.HasSuffix(defaultBucket, "-") {
+		defaultBucket = defaultBucket[:len(defaultBucket)-1]
+	}
 
 	remainingPrompts := &cr.PromptValidation{
 		SkipPopulatedFields: true,
@@ -658,7 +671,9 @@ func InstallPrompt(clusterConfig *Config, awsAccessKeyID string, awsSecretAccess
 					Prompt: BucketUserFacingKey,
 				},
 				StringPtrValidation: &cr.StringPtrValidation{
-					Default: defaultBucket,
+					Default:   &defaultBucket,
+					MinLength: 3,
+					MaxLength: 63,
 				},
 			},
 			{
@@ -735,6 +750,13 @@ func UpdatePromptValidation(skipPopulatedFields bool, userClusterConfig *Config)
 	}
 }
 
+func CortexClusterNameValidation(clusterName string) (string, error) {
+	if !_strictS3BucketRegex.MatchString(clusterName) {
+		return "", errors.Wrap(ErrorDidNotMatchStrictS3Regex(), ClusterNameKey, clusterName)
+	}
+	return clusterName, nil
+}
+
 var AccessPromptValidation = &cr.PromptValidation{
 	SkipPopulatedFields: true,
 	PromptItemValidations: []*cr.PromptItemValidation{
@@ -746,6 +768,8 @@ var AccessPromptValidation = &cr.PromptValidation{
 			StringPtrValidation: &cr.StringPtrValidation{
 				Default:   pointer.String("cortex"),
 				MaxLength: 63,
+				MinLength: 3,
+				Validator: CortexClusterNameValidation,
 			},
 		},
 		{

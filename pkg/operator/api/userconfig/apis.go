@@ -133,7 +133,7 @@ var apiValidation = &cr.StructValidation{
 			StructField: "Endpoint",
 			StringPtrValidation: &cr.StringPtrValidation{
 				Validator: urls.ValidateEndpoint,
-				// MaxLength: 63,  // TODO confirm no limit
+				MaxLength: 100,
 			},
 		},
 		{
@@ -415,7 +415,7 @@ func (predictor *Predictor) PythonValidate() error {
 
 func (api *API) Validate(deploymentName string, projectFileMap map[string][]byte) error {
 	if len(api.Name)+len(deploymentName)+len("----") > 63 {
-		return errors.New("TOO LONG") // TODO improve message
+		return cr.ErrorTooLong("combination of deployment name and api name", 59)
 	}
 
 	if api.Endpoint == nil {
